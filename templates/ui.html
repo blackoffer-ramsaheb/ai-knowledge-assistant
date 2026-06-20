@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>FastAPI Chatbot</title>
+	<link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+</head>
+<body>
+	<main class="page-shell">
+		<section class="hero-card">
+			<div class="hero-copy">
+				<p class="eyebrow">FastAPI Demo</p>
+				<h1>Simple Chatbot UI</h1>
+				<p class="subtitle">Send a message and get a response from your FastAPI backend.</p>
+			</div>
+
+			<div class="chat-panel">
+				<div id="messages" class="messages">
+					<div class="message bot">Hello. Ask me anything.</div>
+				</div>
+
+				<div id="thinking" class="thinking" aria-live="polite" aria-hidden="true">
+					<span class="thinking-label">Thinking</span>
+					<span class="thinking-dots" aria-hidden="true">
+						<span></span><span></span><span></span>
+					</span>
+				</div>
+
+				<form id="chat-form" class="chat-form">
+					<input id="message-input" type="text" placeholder="Type your message..." autocomplete="off" required>
+					<button type="submit">Send</button>
+				</form>
+			</div>
+		</section>
+	</main>
+
+	<script src="{{ url_for('static', path='script.js') }}"></script>
+</body>
+</html>
