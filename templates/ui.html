@@ -3,21 +3,102 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>FastAPI Chatbot</title>
+	<meta name="description" content="AI Knowledge Assistant – Upload PDFs and chat with your documents using RAG and GraphRAG.">
+	<title>AI Knowledge Assistant</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
 </head>
 <body>
+	<!-- Top Navigation -->
+	<nav class="top-nav">
+		<div class="nav-inner">
+			<div class="nav-brand">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+				<span>AI Knowledge Assistant</span>
+			</div>
+			<div class="nav-links">
+				<a href="/" class="nav-link active">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+					Chat
+				</a>
+				<a href="/dashboard" class="nav-link">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+					Dashboard
+				</a>
+			</div>
+		</div>
+	</nav>
+
 	<main class="page-shell">
 		<section class="hero-card">
+			<!-- Header -->
 			<div class="hero-copy">
-				<p class="eyebrow">FastAPI Demo</p>
-				<h1>Simple Chatbot UI</h1>
-				<p class="subtitle">Send a message and get a response from your FastAPI backend.</p>
+				<p class="eyebrow">AI Knowledge Assistant</p>
+				<h1>Chat with your Documents</h1>
+				<p class="subtitle">Upload PDFs, ingest them into the knowledge base, then ask questions using RAG or GraphRAG.</p>
 			</div>
 
+			<!-- Upload Panel -->
+			<div class="upload-panel">
+				<div class="upload-header">
+					<div class="upload-icon">
+						<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+							<polyline points="14 2 14 8 20 8"></polyline>
+							<line x1="12" y1="18" x2="12" y2="12"></line>
+							<line x1="9" y1="15" x2="12" y2="12"></line>
+							<line x1="15" y1="15" x2="12" y2="12"></line>
+						</svg>
+					</div>
+					<span class="upload-title">Knowledge Base</span>
+					<span id="doc-count" class="doc-badge">0 docs</span>
+				</div>
+
+				<div id="drop-zone" class="drop-zone">
+					<input id="file-input" type="file" accept=".pdf" multiple hidden>
+					<p class="drop-text">Drag &amp; drop PDFs here or <button type="button" id="browse-btn" class="browse-link">browse</button></p>
+				</div>
+
+				<div id="file-list" class="file-list"></div>
+
+				<div class="upload-actions">
+					<button id="upload-btn" class="btn btn-accent" disabled>
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+						Upload &amp; Ingest
+					</button>
+					<button id="ingest-btn" class="btn btn-secondary" title="Re-ingest all uploaded documents">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+						Re-ingest
+					</button>
+				</div>
+
+				<div id="status-bar" class="status-bar" hidden></div>
+			</div>
+
+			<!-- Mode Tabs -->
+			<div class="mode-tabs" role="tablist">
+				<button class="mode-tab active" role="tab" data-mode="chat" aria-selected="true">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+					Chat
+				</button>
+				<button class="mode-tab" role="tab" data-mode="rag" aria-selected="false">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+					RAG
+				</button>
+				<button class="mode-tab" role="tab" data-mode="graph" aria-selected="false">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><line x1="12" y1="8" x2="5" y2="16"/><line x1="12" y1="8" x2="19" y2="16"/></svg>
+					GraphRAG
+				</button>
+			</div>
+
+			<!-- Chat Panel -->
 			<div class="chat-panel">
 				<div id="messages" class="messages">
-					<div class="message bot">Hello. Ask me anything.</div>
+					<div class="message bot">
+						<div class="message-content">Hello! I'm your AI Knowledge Assistant. Upload some PDFs, ingest them, then switch to <strong>RAG</strong> or <strong>GraphRAG</strong> mode to ask questions about your documents. You can also use <strong>Chat</strong> mode for general questions.</div>
+					</div>
 				</div>
 
 				<div id="thinking" class="thinking" aria-live="polite" aria-hidden="true">
@@ -28,8 +109,10 @@
 				</div>
 
 				<form id="chat-form" class="chat-form">
-					<input id="message-input" type="text" placeholder="Type your message..." autocomplete="off" required>
-					<button type="submit">Send</button>
+					<input id="message-input" type="text" placeholder="Ask a question..." autocomplete="off" required>
+					<button type="submit" id="send-btn">
+						<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+					</button>
 				</form>
 			</div>
 		</section>

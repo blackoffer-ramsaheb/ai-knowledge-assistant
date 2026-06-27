@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="AI Knowledge Assistant — Analytics Dashboard. View documents, chat history, and usage analytics.">
+	<title>Dashboard — AI Knowledge Assistant</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+</head>
+<body>
+	<!-- Top Navigation -->
+	<nav class="top-nav">
+		<div class="nav-inner">
+			<div class="nav-brand">
+				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+				<span>AI Knowledge Assistant</span>
+			</div>
+			<div class="nav-links">
+				<a href="/" class="nav-link">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+					Chat
+				</a>
+				<a href="/dashboard" class="nav-link active">
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+					Dashboard
+				</a>
+			</div>
+		</div>
+	</nav>
+
+	<main class="dash-shell">
+		<!-- Page Header -->
+		<div class="dash-header">
+			<div>
+				<p class="eyebrow">Analytics</p>
+				<h1>Dashboard</h1>
+			</div>
+			<button id="refresh-btn" class="btn btn-secondary" title="Refresh data">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+				Refresh
+			</button>
+		</div>
+
+		<!-- Stat Cards -->
+		<section class="stat-cards" id="stat-cards">
+			<div class="stat-card">
+				<div class="stat-icon blue">
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+				</div>
+				<div class="stat-info">
+					<span class="stat-value" id="total-chats">—</span>
+					<span class="stat-label">Total Chats</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon violet">
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+				</div>
+				<div class="stat-info">
+					<span class="stat-value" id="total-docs">—</span>
+					<span class="stat-label">Documents</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon green">
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+				</div>
+				<div class="stat-info">
+					<span class="stat-value" id="total-chunks">—</span>
+					<span class="stat-label">Total Chunks</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon amber">
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+				</div>
+				<div class="stat-info">
+					<span class="stat-value" id="ingested-docs">—</span>
+					<span class="stat-label">Ingested</span>
+				</div>
+			</div>
+		</section>
+
+		<!-- Main Grid: Two columns -->
+		<div class="dash-grid">
+			<!-- Left Column -->
+			<div class="dash-col">
+				<!-- Documents Table -->
+				<section class="dash-card">
+					<div class="card-header">
+						<h2 class="card-title">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+							Documents
+						</h2>
+					</div>
+					<div class="table-wrap">
+						<table class="dash-table" id="docs-table">
+							<thead>
+								<tr>
+									<th>Filename</th>
+									<th>Size</th>
+									<th>Status</th>
+									<th>Chunks</th>
+									<th>Uploaded</th>
+								</tr>
+							</thead>
+							<tbody id="docs-body">
+								<tr><td colspan="5" class="empty-row">Loading…</td></tr>
+							</tbody>
+						</table>
+					</div>
+				</section>
+
+				<!-- Chats per Mode -->
+				<section class="dash-card">
+					<div class="card-header">
+						<h2 class="card-title">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+							Chats per Mode
+						</h2>
+					</div>
+					<div class="bar-chart" id="mode-chart"></div>
+				</section>
+
+				<!-- Most Asked Questions -->
+				<section class="dash-card">
+					<div class="card-header">
+						<h2 class="card-title">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+							Most Asked Questions
+						</h2>
+					</div>
+					<div class="top-questions" id="top-questions">
+						<p class="empty-row">Loading…</p>
+					</div>
+				</section>
+			</div>
+
+			<!-- Right Column -->
+			<div class="dash-col">
+				<!-- Chat History -->
+				<section class="dash-card full-height">
+					<div class="card-header">
+						<h2 class="card-title">
+							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+							Chat History
+						</h2>
+					</div>
+					<div class="table-wrap scroll-tall">
+						<table class="dash-table" id="history-table">
+							<thead>
+								<tr>
+									<th>Question</th>
+									<th>Answer</th>
+									<th>Mode</th>
+									<th>Time</th>
+								</tr>
+							</thead>
+							<tbody id="history-body">
+								<tr><td colspan="4" class="empty-row">Loading…</td></tr>
+							</tbody>
+						</table>
+					</div>
+				</section>
+			</div>
+		</div>
+	</main>
+
+	<script src="{{ url_for('static', path='dashboard.js') }}"></script>
+</body>
+</html>
